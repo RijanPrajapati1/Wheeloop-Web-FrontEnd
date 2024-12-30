@@ -4,12 +4,12 @@ export default {
     "./index.html",
     "./src/**/*.{js,ts,jsx,tsx}",
   ],
-  darkMode: "class",
   theme: {
     extend: {
       colors: {
-        primary: "#ffc727",
-        dark: "#111111",
+        deepPurple: "#5e2a84",
+        whiteColor: "#ffffff",
+        blackColor: "#000000"
       },
       container: {
         center: true,
@@ -20,5 +20,7 @@ export default {
       },
     },
   },
-  plugins: [],
+  plugins: [
+    require('daisyui'),
+  ],
 }
