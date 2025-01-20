@@ -1,25 +1,36 @@
-import React from "react";
+import React, { useState } from "react";
 
 const Navbar = () => {
+  const [isLoginModalOpen, setIsLoginModalOpen] = useState(false);
+  const [isSignupModalOpen, setIsSignupModalOpen] = useState(false);
+
+  const toggleLoginModal = () => {
+    setIsLoginModalOpen(!isLoginModalOpen);
+    setIsSignupModalOpen(false); // Ensure signup modal is closed
+  };
+
+  const toggleSignupModal = () => {
+    setIsSignupModalOpen(!isSignupModalOpen);
+    setIsLoginModalOpen(false); // Ensure login modal is closed
+  };
+
   return (
     <div className="navbar bg-deepPurple shadow-md">
-
       <div className="flex-none">
         <a className="btn btn-ghost normal-case text-2xl font-bold text-white" href="/">
           Wheeloop
         </a>
       </div>
 
-
       <div className="flex-1 flex justify-center">
         <ul className="menu menu-horizontal px-2 space-x-6">
           <li>
-            <a className="text-lg font-medium text-white hover:text-primary" href="/Home">
+            <a className="text-lg font-medium text-white hover:text-primary" href="/">
               Home
             </a>
           </li>
           <li>
-            <a className="text-lg font-medium text-white hover:text-primary" href="/Cars">
+            <a className="text-lg font-medium text-white hover:text-primary" href="/carlists">
               Cars
             </a>
           </li>
@@ -41,73 +52,170 @@ const Navbar = () => {
         </ul>
       </div>
 
-
       <div className="flex-none flex items-center space-x-4">
-        {/* Notification Icon */}
-        <div className="dropdown dropdown-end">
-          <div
-            tabIndex={0}
-            role="button"
-            className="btn btn-ghost btn-circle"
-            aria-label="Notifications">
-            <div className="indicator">
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                className="h-6 w-6"
-                fill="none"
-                viewBox="0 0 24 24"
-                stroke="currentColor">
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth="2"
-                  d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14V11a6 6 0 10-12 0v3c0 .538-.214 1.055-.595 1.405L4 17h5m6 0a3 3 0 11-6 0m6 0H9" />
-              </svg>
-              <span className="badge badge-sm indicator-item">5</span>
-            </div>
-          </div>
-          <div
-            tabIndex={0}
-            className="menu menu-sm dropdown-content bg-base-100 rounded-box z-[1] mt-3 w-52 shadow-lg">
-            <span className="text-lg font-bold p-2">Notifications</span>
-            <ul>
-              <li className="p-2">You have 5 unread messages</li>
-              <li className="p-2">Your booking is confirmed</li>
-            </ul>
-          </div>
-        </div>
+        <button
+          onClick={toggleLoginModal}
+          className="btn bg-primary hover:bg-primary/80 text-white px-5 py-2 text-lg font-semibold rounded-lg shadow-md transition duration-300"
+        >
+          Login
+        </button>
 
-        {/* Profile Section */}
-        <div className="dropdown dropdown-end">
-          <div
-            tabIndex={0}
-            role="button"
-            className="btn btn-ghost btn-circle avatar hover:shadow-md">
-            <div className="w-10 rounded-full">
-              <img
-                alt="User Avatar"
-                src="https://img.daisyui.com/images/stock/photo-1534528741775-53994a69daeb.webp"
-              />
-            </div>
-          </div>
-          <ul
-            tabIndex={0}
-            className="menu menu-sm dropdown-content bg-base-100 rounded-lg z-[1] mt-3 w-52 p-3 shadow-lg">
-            <li>
-              <a className="justify-between">
-                Profile
-                <span className="badge badge-primary">New</span>
-              </a>
-            </li>
-            <li>
-              <a>Settings</a>
-            </li>
-            <li>
-              <a>Logout</a>
-            </li>
-          </ul>
-        </div>
       </div>
+
+      {/* Login Modal */}
+      {isLoginModalOpen && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">
+          <div className="bg-white rounded-xl shadow-lg p-8 w-full sm:w-[470px]  relative">
+            {/* Close Button */}
+            <button
+              onClick={toggleLoginModal}
+              className="absolute top-4 right-4 text-black-500 hover:text-gray-700"
+            >
+              &times;
+            </button>
+
+            {/* Modal Content */}
+            <h2 className="text-3xl text-black font-bold text-center mb-4">Login</h2>
+            <p className="text-sm text-black text-center mb-6">
+              Enter your credentials to access your account
+            </p>
+
+            <form>
+              <div className="mb-4">
+                <label className="block text-sm font-medium text-black mb-2">
+                  Email
+                </label>
+                <input
+                  type="email"
+                  className="w-full px-4 py-3 bg-white text-black border border-gray-400 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary"
+                />
+              </div>
+              <div className="mb-4">
+                <label className="block text-sm font-medium text-black mb-2">
+                  Password
+                </label>
+                <input
+                  type="password"
+                  className="w-full px-4 py-3 bg-white text-black border border-gray-400 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary"
+                />
+              </div>
+
+              <button
+                type="submit"
+                className="w-full bg-deepPurple text-white py-2 rounded-lg hover:bg-deepPurple/90 transition duration-300"
+              >
+                Login
+              </button>
+            </form>
+
+            <p className="text-sm text-black text-center mt-4">
+              Don’t have an account?{" "}
+              <button
+                onClick={toggleSignupModal}
+                className="text-primary hover:underline"
+              >
+                Sign up
+              </button>
+            </p>
+          </div>
+        </div>
+      )}
+
+      {/* Signup Modal */}
+      {isSignupModalOpen && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">
+          <div className="bg-white rounded-xl shadow-lg p-8 w-full sm:w-[600px] relative">
+            {/* Close Button */}
+            <button
+              onClick={toggleSignupModal}
+              className="absolute top-4 right-4 text-gray-500 hover:text-gray-700"
+            >
+              &times;
+            </button>
+
+            {/* Modal Content */}
+            <h2 className="text-3xl text-black font-bold text-center mb-4">Sign Up</h2>
+            <p className="text-sm text-black text-center mb-6">
+              Create an account to start using Wheeloop
+            </p>
+
+            <form>
+              <div className="mb-4">
+                <label className="block text-sm font-medium text-black mb-2">
+                  Full Name
+                </label>
+                <input
+                  type="text"
+                  className="w-full px-4 py-3 bg-white text-black border border-gray-400 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary"
+                />
+              </div>
+              <div className="mb-4">
+                <label className="block text-sm font-medium text-black mb-2">
+                  Email
+                </label>
+                <input
+                  type="email"
+                  className="w-full px-4 py-3 bg-white text-black border border-gray-400 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary"
+                />
+              </div>
+              <div className="mb-4">
+                <label className="block text-sm font-medium text-black mb-2">
+                  Address
+                </label>
+                <input
+                  type="text"
+                  className="w-full px-4 py-3 bg-white text-black border border-gray-400 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary"
+                />
+              </div>
+              <div className="mb-4">
+                <label className="block text-sm font-medium text-black mb-2">
+                  Phone Number
+                </label>
+                <input
+                  type="text"
+                  className="w-full px-4 py-3 bg-white text-black border border-gray-400 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary"
+                />
+              </div>
+              <div className="mb-4">
+                <label className="block text-sm font-medium text-black mb-2">
+                  Password
+                </label>
+                <input
+                  type="password"
+                  className="w-full px-4 py-3 bg-white text-black border border-gray-400 rounded-lg focus:outline-none focus:ring focus:ring-primary"
+
+                />
+              </div>
+              <div className="mb-4">
+                <label className="block text-sm font-medium text-black mb-2">
+                  Confirm Password
+                </label>
+                <input
+                  type="password"
+                  className="w-full px-4 py-3 bg-white text-black border border-gray-400 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary"
+                />
+              </div>
+
+              <button
+                type="submit"
+                className="w-full bg-deepPurple text-white py-2 rounded-lg hover:bg-deepPurple/90 transition duration-300"
+              >
+                Sign Up
+              </button>
+            </form>
+
+            <p className="text-sm text-black text-center mt-4">
+              Already have an account?{" "}
+              <button
+                onClick={toggleLoginModal}
+                className="text-primary hover:underline"
+              >
+                Login
+              </button>
+            </p>
+          </div>
+        </div>
+      )}
     </div>
   );
 };
