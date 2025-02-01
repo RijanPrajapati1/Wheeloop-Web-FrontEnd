@@ -1,48 +1,42 @@
 import React, { useState } from "react";
-import { FaCogs, FaRoad, FaUser } from "react-icons/fa";
+import { FaCogs, FaRoad, FaStar, FaUser } from "react-icons/fa";
 import Navbar from "../Navbar/navbar";
 import cars from "./Car";
 
-// CarCard Component
-const CarCard = ({ name, type, price, capacity, transmission, mileage, img, onBookClick }) => (
-    <div className="bg-white rounded-2xl shadow-lg p-6 hover:shadow-xl transition-shadow duration-300">
-        {/* Car Image */}
+const CarCard = ({ car, onCardClick }) => (
+    <div
+        className="bg-white rounded-2xl shadow-lg p-6 hover:shadow-xl transition-shadow duration-300 cursor-pointer"
+        onClick={() => onCardClick(car)}
+    >
         <div className="flex justify-center">
-            <img
-                src={img}
-                alt={name}
-                className="w-full h-48 object-contain rounded-xl"
-            />
+            <img src={car.img} alt={car.name} className="w-full h-48 object-contain rounded-xl" />
         </div>
-
-        {/* Car Details */}
-        <h2 className="text-xl font-semibold text-gray-800 mt-4 truncate">{name}</h2>
-        <p className="text-sm text-gray-500 mb-4">{type}</p>
-
-        {/* Additional Info */}
+        <h2 className="text-xl font-semibold text-gray-800 mt-4 truncate">{car.name}</h2>
+        <p className="text-sm text-gray-500 mb-4">{car.type}</p>
         <div className="flex justify-between items-center text-sm text-gray-700 border-t border-gray-200 pt-4">
             <div className="flex items-center gap-2">
                 <FaUser className="text-gray-600" />
-                <p>{capacity} People</p>
+                <p>{car.capacity} People</p>
             </div>
             <div className="flex items-center gap-2">
                 <FaCogs className="text-gray-600" />
-                <p>{transmission}</p>
+                <p>{car.transmission}</p>
             </div>
             <div className="flex items-center gap-2">
                 <FaRoad className="text-gray-600" />
-                <p>{mileage} miles/day</p>
+                <p>{car.mileage} miles/day</p>
             </div>
         </div>
-
-        {/* Price and Button */}
         <div className="mt-6 flex justify-between items-center">
-            <p className="text-lg font-bold text-green-600">${price}/day</p>
+            <p className="text-lg font-bold text-green-600">${car.price}/day</p>
             <button
                 className="bg-blue-600 text-white px-5 py-2 rounded-full hover:bg-blue-700 transition duration-300"
-                onClick={() => onBookClick(name, price)}
+                onClick={(e) => {
+                    e.stopPropagation(); // Prevent card click event
+                    onCardClick(car); // Open the car details modal
+                }}
             >
-                Book Now
+                View Details
             </button>
         </div>
     </div>
@@ -50,41 +44,51 @@ const CarCard = ({ name, type, price, capacity, transmission, mileage, img, onBo
 
 const CarListing = () => {
     const [searchTerm, setSearchTerm] = useState("");
-    const [showBookingForm, setShowBookingForm] = useState(false);
     const [selectedCar, setSelectedCar] = useState(null);
+    const [showBookingForm, setShowBookingForm] = useState(false);
     const [formData, setFormData] = useState({
         name: "",
         contact: "",
-        driverRequired: false,
+        pickUpLocation: "",
+        startDate: "",
+        endDate: "",
+        status: "",
+        driverDays: 0,
     });
 
-    // Filter cars based on search term
     const filteredCars = cars.filter(
         (car) =>
             car.name.toLowerCase().includes(searchTerm) ||
             car.type.toLowerCase().includes(searchTerm)
     );
 
-    // Handle form data change
     const handleInputChange = (e) => {
-        const { name, value, type, checked } = e.target;
+        const { name, value } = e.target;
         setFormData((prevData) => ({
             ...prevData,
-            [name]: type === "checkbox" ? checked : value,
+            [name]: value,
         }));
     };
 
-    // Handle form submission
     const handleFormSubmit = (e) => {
         e.preventDefault();
+        // Handle form submission logic
         console.log("Form submitted", formData);
-        // Here you can handle the form submission logic (e.g., save data to backend)
-        setShowBookingForm(false); // Close the form after submission
+        // Reset form after submission
+        setFormData({
+            name: "",
+            contact: "",
+            pickUpLocation: "",
+            startDate: "",
+            endDate: "",
+            status: "",
+            driverDays: 0,
+        });
+        setShowBookingForm(false);
+        setSelectedCar(null);
     };
 
-    // Show booking form when 'Book Now' is clicked
-    const handleBookClick = (carName, carPrice) => {
-        setSelectedCar({ name: carName, price: carPrice });
+    const handleBookClick = () => {
         setShowBookingForm(true);
     };
 
@@ -92,7 +96,6 @@ const CarListing = () => {
         <div>
             <Navbar />
             <div className="min-h-screen bg-gray-50 p-8">
-                {/* Search Bar */}
                 <div className="mb-8">
                     <input
                         type="text"
@@ -106,11 +109,51 @@ const CarListing = () => {
                 {/* Car Cards */}
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
                     {filteredCars.map((car, index) => (
-                        <CarCard key={index} {...car} onBookClick={handleBookClick} />
+                        <CarCard key={index} car={car} onCardClick={setSelectedCar} />
                     ))}
                 </div>
 
-                {/* Booking Form Toggle */}
+                {/* Car Details and Book Now Modal */}
+                {selectedCar && (
+                    <div className="fixed inset-0 bg-gray-700 bg-opacity-50 flex justify-center items-center z-50">
+                        <div className="bg-white rounded-xl shadow-lg p-8 w-full sm:w-[700px] relative">
+                            <button
+                                className="absolute top-4 right-4 text-gray-600 hover:text-gray-800"
+                                onClick={() => setSelectedCar(null)}
+                            >
+                                ✖
+                            </button>
+                            <h3 className="text-2xl font-semibold mb-4">{selectedCar.name}</h3>
+                            <div className="flex overflow-x-auto gap-2 mb-4">
+                                <img
+                                    src={selectedCar.img}
+                                    alt={selectedCar.name}
+                                    className="w-40 h-24 rounded-lg object-cover"
+                                />
+                            </div>
+                            <p className="text-gray-700 mb-2"><strong>Type:</strong> {selectedCar.type}</p>
+                            <p className="text-gray-700 mb-2"><strong>Capacity:</strong> {selectedCar.capacity} People</p>
+                            <p className="text-gray-700 mb-2"><strong>Transmission:</strong> {selectedCar.transmission}</p>
+                            <p className="text-gray-700 mb-2"><strong>Mileage:</strong> {selectedCar.mileage} miles/day</p>
+                            <p className="text-gray-700 mb-2"><strong>Price:</strong> ${selectedCar.price}/day</p>
+                            <div className="flex items-center mb-4">
+                                <FaStar className="text-yellow-500" />
+                                <span className="ml-2 text-gray-800 font-semibold">{selectedCar.rating} / 5</span>
+                            </div>
+                            <p className="text-gray-600 mb-6">{selectedCar.description}</p>
+                            <div className="flex justify-end">
+                                <button
+                                    className="bg-blue-600 text-white px-5 py-2 rounded-full hover:bg-blue-700 transition duration-300"
+                                    onClick={handleBookClick}
+                                >
+                                    Book Now
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                )}
+
+                {/* Booking Form Modal */}
                 {showBookingForm && (
                     <div className="fixed inset-0 bg-gray-700 bg-opacity-50 flex justify-center items-center z-50">
                         <div className="bg-white rounded-xl shadow-lg p-8 w-full sm:w-[700px] relative">
@@ -193,27 +236,9 @@ const CarListing = () => {
                                     />
                                 </div>
 
-                                {/* Status */}
-                                <div className="mb-4">
-                                    <label htmlFor="status" className="block text-sm font-medium text-gray-700">Status</label>
-                                    <select
-                                        id="status"
-                                        name="status"
-                                        value={formData.status}
-                                        onChange={handleInputChange}
-                                        className="w-full px-4 py-3 bg-white text-black border border-gray-400 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary"
-                                        required
-                                    >
-                                        <option value="" disabled>Select status</option>
-                                        <option value="Pending">Pending</option>
-                                        <option value="Confirmed">Confirmed</option>
-                                        <option value="Cancelled">Cancelled</option>
-                                    </select>
-                                </div>
-
                                 {/* Driver Cost Section */}
                                 <div className="mb-4">
-                                    <label className="block text-sm font-medium text-gray-700">Driver Price: Rs. 300/day</label>
+                                    <label className="block text-sm font-medium text-gray-700">Driver Price: Rs. 300/day, Enter the number of days you want driver for</label>
                                     <div className="mt-2 flex items-center gap-4">
                                         {/* Text Field for Driver Days */}
                                         <input
@@ -237,15 +262,20 @@ const CarListing = () => {
                                     )}
                                 </div>
 
-
-
-                                {/* Submit Button */}
-                                <div className="flex justify-end">
+                                {/* Submit */}
+                                <div className="mt-4 flex justify-between">
                                     <button
                                         type="submit"
-                                        className="bg-blue-600 text-white px-5 py-2 rounded-full hover:bg-blue-700 transition duration-300"
+                                        className="bg-green-600 text-white px-5 py-2 rounded-full hover:bg-green-700"
                                     >
-                                        Submit Booking
+                                        Confirm Booking
+                                    </button>
+                                    <button
+                                        type="button"
+                                        className="bg-gray-300 text-black px-5 py-2 rounded-full hover:bg-gray-400"
+                                        onClick={() => setShowBookingForm(false)}
+                                    >
+                                        Cancel
                                     </button>
                                 </div>
                             </form>
