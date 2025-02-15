@@ -1,7 +1,7 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { FaCogs, FaRoad, FaStar, FaUser } from "react-icons/fa";
 import Navbar from "../Navbar/navbar";
-import cars from "./Car";
+import axiosInstance from "../utils/axios";
 
 const CarCard = ({ car, onCardClick }) => (
     <div
@@ -43,6 +43,7 @@ const CarCard = ({ car, onCardClick }) => (
 );
 
 const CarListing = () => {
+    const [cars, setCars] = useState([]); // state to hold car data
     const [searchTerm, setSearchTerm] = useState("");
     const [selectedCar, setSelectedCar] = useState(null);
     const [showBookingForm, setShowBookingForm] = useState(false);
@@ -56,10 +57,30 @@ const CarListing = () => {
         driverDays: 0,
     });
 
+    // Fetch cars data from backend
+    useEffect(() => {
+        const fetchCars = async () => {
+            try {
+                const response = await axiosInstance.get("/car"); // Adjust endpoint if necessary
+                setCars(response.data); // Set the cars data to state
+            } catch (error) {
+                console.error("Error fetching cars", error);
+            }
+        };
+
+        fetchCars();
+    }, []);
+
+    // Handle search term change
+    const handleSearchChange = (event) => {
+        setSearchTerm(event.target.value);
+    };
+
+    // Filter users based on search term
     const filteredCars = cars.filter(
         (car) =>
-            car.name.toLowerCase().includes(searchTerm) ||
-            car.type.toLowerCase().includes(searchTerm)
+            (car.name?.toLowerCase().includes(searchTerm.toLowerCase())) ||
+            (car.type?.toLowerCase().includes(searchTerm.toLowerCase()))
     );
 
     const handleInputChange = (e) => {
@@ -100,7 +121,7 @@ const CarListing = () => {
                     <input
                         type="text"
                         value={searchTerm}
-                        onChange={(e) => setSearchTerm(e.target.value.toLowerCase())}
+                        onChange={handleSearchChange}
                         placeholder="Search for cars..."
                         className="w-full px-5 py-3 bg-white text-gray-800 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-600"
                     />
@@ -236,43 +257,30 @@ const CarListing = () => {
                                     />
                                 </div>
 
-                                {/* Driver Cost Section */}
+                                {/* Driver Days */}
                                 <div className="mb-4">
-                                    <label className="block text-sm font-medium text-gray-700">Driver Price: Rs. 300/day, Enter the number of days you want driver for</label>
-                                    <div className="mt-2 flex items-center gap-4">
-                                        {/* Text Field for Driver Days */}
-                                        <input
-                                            type="number"
-                                            name="driverDays"
-                                            value={formData.driverDays || ""}
-                                            onChange={(e) => {
-                                                const days = Math.max(0, parseInt(e.target.value, 10) || 0); // Ensure non-negative integers
-                                                setFormData({ ...formData, driverDays: days });
-                                            }}
-                                            placeholder="Enter number of days"
-                                            className="w-24 px-3 py-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-600"
-                                        />
-                                    </div>
-
-                                    {/* Total Driver Cost */}
-                                    {formData.driverDays > 0 && (
-                                        <p className="mt-2 text-sm text-gray-700">
-                                            Total Driver Cost: Rs. {formData.driverDays * 300}
-                                        </p>
-                                    )}
+                                    <label htmlFor="driverDays" className="block text-sm font-medium text-gray-700">Driver Days</label>
+                                    <input
+                                        type="number"
+                                        id="driverDays"
+                                        name="driverDays"
+                                        value={formData.driverDays}
+                                        onChange={handleInputChange}
+                                        className="w-full px-4 py-3 bg-white text-black border border-gray-400 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary"
+                                        required
+                                    />
                                 </div>
 
-                                {/* Submit */}
-                                <div className="mt-4 flex justify-between">
+                                <div className="flex justify-between">
                                     <button
                                         type="submit"
-                                        className="bg-green-600 text-white px-5 py-2 rounded-full hover:bg-green-700"
+                                        className="bg-green-600 text-white px-5 py-2 rounded-full hover:bg-green-700 transition duration-300"
                                     >
                                         Confirm Booking
                                     </button>
                                     <button
                                         type="button"
-                                        className="bg-gray-300 text-black px-5 py-2 rounded-full hover:bg-gray-400"
+                                        className="bg-gray-600 text-white px-5 py-2 rounded-full hover:bg-gray-700 transition duration-300"
                                         onClick={() => setShowBookingForm(false)}
                                     >
                                         Cancel

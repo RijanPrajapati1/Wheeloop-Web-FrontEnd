@@ -1,73 +1,87 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { FaEdit, FaTrashAlt } from "react-icons/fa"; // Importing the icons
+import axiosInstance from "../utils/axios"; // Axios instance
 
 const ManageCars = () => {
-    const [cars, setCars] = useState([
-        {
-            id: 1,
-            name: "Tesla Model 3",
-            price: "$35,000",
-            description: "Electric Sedan with Autopilot",
-            image: "https://example.com/tesla_model_3.jpg"
-        },
-        {
-            id: 2,
-            name: "Ford Mustang",
-            price: "$25,000",
-            description: "Classic American Muscle Car",
-            image: "https://example.com/ford_mustang.jpg"
-        }
-    ]);
-
+    const [cars, setCars] = useState([]);
     const [searchTerm, setSearchTerm] = useState("");
     const [isEditing, setIsEditing] = useState(false);
-    const [isAdding, setIsAdding] = useState(false); // Toggle state for adding car
-    const [currentCar, setCurrentCar] = useState(null); // Store current car being edited/added
+    const [isAdding, setIsAdding] = useState(false);
+    const [currentCar, setCurrentCar] = useState(null);
 
-    // Handle save action for adding or editing
+    // Fetch all cars on component mount
+    useEffect(() => {
+        axiosInstance
+            .get("/car")
+            .then((response) => {
+                setCars(response.data);
+            })
+            .catch((error) => {
+                console.error("Error fetching cars:", error);
+            });
+    }, []);
+
     const handleSave = () => {
         if (isAdding) {
-            setCars([...cars, { ...currentCar, id: cars.length + 1 }]); // Add new car
-            setIsAdding(false);
+            // Add car request
+            axiosInstance
+                .post("/car", currentCar)
+                .then((response) => {
+                    setCars([...cars, response.data]);
+                    setIsAdding(false);
+                    setCurrentCar(null);
+                })
+                .catch((error) => {
+                    console.error("Error adding car:", error);
+                });
         } else if (isEditing) {
-            const updatedCars = cars.map((car) =>
-                car.id === currentCar.id ? currentCar : car
-            );
-            setCars(updatedCars);
-            setIsEditing(false);
+            // Update car request
+            axiosInstance
+                .put(`/car/${currentCar.id}`, currentCar)
+                .then((response) => {
+                    const updatedCars = cars.map((car) =>
+                        car.id === currentCar.id ? response.data : car
+                    );
+                    setCars(updatedCars);
+                    setIsEditing(false);
+                    setCurrentCar(null);
+                })
+                .catch((error) => {
+                    console.error("Error updating car:", error);
+                });
         }
-        setCurrentCar(null);
     };
 
-    // Handle search input
     const handleSearchChange = (e) => {
         setSearchTerm(e.target.value);
     };
 
-    // Filter cars based on the search term
     const filteredCars = cars.filter(
         (car) =>
             car.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
             car.description.toLowerCase().includes(searchTerm.toLowerCase())
     );
 
-    // Handle delete action
     const handleDelete = (id) => {
-        const updatedCars = cars.filter((car) => car.id !== id);
-        setCars(updatedCars);
-        console.log(`Car ID ${id} deleted.`);
+        axiosInstance
+            .delete(`/car/${id}`)
+            .then(() => {
+                const updatedCars = cars.filter((car) => car.id !== id);
+                setCars(updatedCars);
+            })
+            .catch((error) => {
+                console.error("Error deleting car:", error);
+            });
     };
 
-    // Handle edit click, set the current car to be edited
     const handleEdit = (car) => {
         setCurrentCar({ ...car });
-        setIsEditing(true); // Open the edit form
+        setIsEditing(true);
     };
 
-    // Handle add car
     const handleAddCar = () => {
         setCurrentCar({ name: "", price: "", description: "", image: "" });
-        setIsAdding(true); // Open the add car form
+        setIsAdding(true);
     };
 
     return (
@@ -175,7 +189,7 @@ const ManageCars = () => {
                 <tbody>
                     {filteredCars.map((car) => (
                         <tr key={car.id}>
-                            <td className="border px-4 py-2">{car.id}</td>
+                            <td className="border px-4 py-2">{car._id}</td>
                             <td className="border px-4 py-2">{car.name}</td>
                             <td className="border px-4 py-2">{car.price}</td>
                             <td className="border px-4 py-2">{car.description}</td>

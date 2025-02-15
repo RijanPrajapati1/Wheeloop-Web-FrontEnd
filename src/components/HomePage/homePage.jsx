@@ -21,23 +21,13 @@ const HomePage = () => {
             >
                 <div className="w-full px-6 sm:px-12 lg:px-20 flex flex-col lg:flex-row items-center justify-between gap-8">
                     {/* Text Section */}
-                    <div
-                        className="space-y-6 w-full lg:w-1/2"
-                        data-aos="fade-right"
-                    >
-                        <p className="text-primary text-3xl font-serif">
-                            Effortless
-                        </p>
-                        <h1 className="text-6xl lg:text-7xl font-bold font-serif">
-                            WHEELOOP
-                        </h1>
-                        <h2 className="text-3xl lg:text-4xl font-semibold">
-                            Rent. Ride. Repeat.
-                        </h2>
+                    <div className="space-y-6 w-full lg:w-1/2" data-aos="fade-right">
+                        <p className="text-primary text-3xl font-serif">Effortless</p>
+                        <h1 className="text-6xl lg:text-7xl font-bold font-serif">WHEELOOP</h1>
+                        <h2 className="text-3xl lg:text-4xl font-semibold">Rent. Ride. Repeat.</h2>
                         <p className="text-lg lg:text-xl">
                             Provident cupiditate voluptatem et in. Quaerat fugiat ut assumenda
-                            excepturi exercitationem quasi. In deleniti eaque aut repudiandae
-                            et a id nisi.
+                            excepturi exercitationem quasi. In deleniti eaque aut repudiandae et a id nisi.
                         </p>
                         <button className="rounded-md bg-primary hover:bg-primary/80 transition duration-500 py-3 px-8 text-black text-xl">
                             Get Started
@@ -62,48 +52,45 @@ const HomePage = () => {
             {/* About Section */}
             <section
                 id="about"
-                className="w-full min-h-screen bg-gray-100 flex items-center justify-center"
+                className="w-full min-h-screen bg-gradient-to-r from-blue-100 to-white flex items-center justify-center"
             >
-                <div
-                    className="w-full max-w-4xl px-6 text-center space-y-6"
-                    data-aos="fade-up"
-                >
-                    <h2 className="text-4xl font-bold">About Us</h2>
-                    <p className="text-lg">
-                        Wheeloop is your trusted partner in car rentals, offering seamless
-                        experiences with a diverse fleet of vehicles for all your travel needs.
+                <div className="w-full max-w-5xl px-6 text-center space-y-6">
+                    <h2 className="text-5xl font-semibold text-primary">About Us</h2>
+                    <p className="text-xl lg:text-2xl text-gray-700">
+                        At Wheeloop, we provide you with seamless and reliable car rental services for all
+                        your travel needs. Whether it's a weekend getaway or a business trip, we’ve got you
+                        covered.
                     </p>
+                    <button className="rounded-md bg-primary hover:bg-primary/80 transition duration-500 py-3 px-8 text-black text-xl">
+                        Learn More About Us
+                    </button>
                 </div>
             </section>
 
             {/* Recommendation Section */}
             <section
                 id="recommendation"
-                className="w-full min-h-screen bg-white flex items-center justify-center"
+                className="w-full min-h-screen bg-gradient-to-t from-gray-100 to-white flex items-center justify-center"
             >
-                <div
-                    className="w-full max-w-6xl px-6 space-y-6"
-                    data-aos="fade-up"
-                >
-                    <h2 className="text-4xl font-bold text-center">
+                <div className="w-full max-w-6xl px-6 space-y-6" data-aos="fade-up">
+                    <h2 className="text-4xl font-bold text-center text-primary">
                         Recommendations
                     </h2>
-                    <p className="text-lg text-center">
+                    <p className="text-lg text-center text-gray-700">
                         Based on your preferences, we recommend vehicles that suit your journey,
                         budget, and style.
                     </p>
-                    {/* Example recommendation list */}
-                    <ul className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-                        <li className="p-4 bg-gray-100 rounded-lg shadow">
-                            <h3 className="text-xl font-semibold">Compact Car</h3>
+                    <ul className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 mt-8">
+                        <li className="p-4 bg-gray-100 rounded-lg shadow-lg hover:shadow-xl transition-all">
+                            <h3 className="text-xl font-semibold text-primary">Compact Car</h3>
                             <p>Perfect for city drives and short commutes.</p>
                         </li>
-                        <li className="p-4 bg-gray-100 rounded-lg shadow">
-                            <h3 className="text-xl font-semibold">SUV</h3>
+                        <li className="p-4 bg-gray-100 rounded-lg shadow-lg hover:shadow-xl transition-all">
+                            <h3 className="text-xl font-semibold text-primary">SUV</h3>
                             <p>Ideal for family trips and off-road adventures.</p>
                         </li>
-                        <li className="p-4 bg-gray-100 rounded-lg shadow">
-                            <h3 className="text-xl font-semibold">Luxury</h3>
+                        <li className="p-4 bg-gray-100 rounded-lg shadow-lg hover:shadow-xl transition-all">
+                            <h3 className="text-xl font-semibold text-primary">Luxury</h3>
                             <p>For those who love style and comfort.</p>
                         </li>
                     </ul>
@@ -113,32 +100,29 @@ const HomePage = () => {
             {/* Contact Section */}
             <section
                 id="contact"
-                className="w-full min-h-screen bg-gray-200 flex items-center justify-center"
+                className="w-full min-h-screen bg-gradient-to-b from-gray-200 to-white flex items-center justify-center"
             >
-                <div
-                    className="w-full max-w-3xl px-6 space-y-6"
-                    data-aos="fade-up"
-                >
-                    <h2 className="text-4xl font-bold text-center">Contact Us</h2>
+                <div className="w-full max-w-3xl px-6 space-y-6" data-aos="fade-up">
+                    <h2 className="text-4xl font-bold text-center text-primary">Contact Us</h2>
                     <form className="space-y-4">
                         <input
                             type="text"
                             placeholder="Your Name"
-                            className="w-full px-4 py-3 rounded border"
+                            className="w-full px-4 py-3 rounded-lg border-2 border-gray-300 focus:outline-none focus:ring-2 focus:ring-primary"
                         />
                         <input
                             type="email"
                             placeholder="Your Email"
-                            className="w-full px-4 py-3 rounded border"
+                            className="w-full px-4 py-3 rounded-lg border-2 border-gray-300 focus:outline-none focus:ring-2 focus:ring-primary"
                         />
                         <textarea
                             placeholder="Your Message"
                             rows="4"
-                            className="w-full px-4 py-3 rounded border"
+                            className="w-full px-4 py-3 rounded-lg border-2 border-gray-300 focus:outline-none focus:ring-2 focus:ring-primary"
                         ></textarea>
                         <button
                             type="submit"
-                            className="bg-primary hover:bg-primary/80 transition duration-500 text-white py-3 px-6 rounded"
+                            className="bg-primary hover:bg-primary/80 transition duration-500 text-white py-3 px-6 rounded-lg w-full"
                         >
                             Submit
                         </button>

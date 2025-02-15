@@ -1,10 +1,27 @@
 import { useState } from "react";
+import { useNavigate } from "react-router-dom"; // Import useNavigate for routing
 import ManageBookings from "../Admin/manageBooking.jsx";
 import ManageCars from "../Admin/manageCar.jsx";
 import ManageUsers from "../Admin/manageUser.jsx";
 
 const AdminPanel = () => {
     const [activeSection, setActiveSection] = useState("dashboard");
+    const navigate = useNavigate();  // Initialize the navigate function from react-router-dom
+
+    // Handle Logout function
+    const handleLogout = () => {
+        // Remove token and role from localStorage
+        localStorage.removeItem("authToken");
+        localStorage.removeItem("userRole");
+        // Redirect to the homepage after logout
+        navigate("/");  // Redirect to homepage
+    };
+
+    // Handle moving to the homepage
+    const handleNavigateToHomepage = () => {
+        // Navigate to the homepage ("/" will go to the home route)
+        navigate("/");  // Redirect to homepage
+    };
 
     return (
         <div className="min-h-screen bg-gray-100 flex flex-col">
@@ -24,7 +41,7 @@ const AdminPanel = () => {
                         <ul tabIndex={0} className="menu menu-sm dropdown-content bg-base-100 rounded-lg z-[1] mt-3 w-52 p-3 shadow-lg">
                             <li><a>Profile</a></li>
                             <li><a>Settings</a></li>
-                            <li><a onClick={() => console.log("Logging out")}>Logout</a></li>
+                            <li><a onClick={handleLogout}>Logout</a></li>
                         </ul>
                     </div>
                 </div>
@@ -68,10 +85,18 @@ const AdminPanel = () => {
                                     Manage Bookings
                                 </button>
                             </li>
+                            <li>
+                                <button
+                                    onClick={handleNavigateToHomepage}  // Update here to navigate to homepage
+                                    className={`block py-2 px-4 rounded-md transition-all duration-300 ${activeSection === "homepage" ? "bg-blue-500 text-white" : "hover:bg-deepPurple hover:text-white"}`}
+                                >
+                                    Navigate to Homepage
+                                </button>
+                            </li>
                         </ul>
                     </nav>
                     <div className="mt-6">
-                        <button onClick={() => console.log("Logging out")} className="w-full py-2 px-4 bg-red-500 hover:bg-red-600 text-white rounded-md">Logout</button>
+                        <button onClick={handleLogout} className="w-full py-2 px-4 bg-red-500 hover:bg-red-600 text-white rounded-md">Logout</button>
                     </div>
                 </div>
 
