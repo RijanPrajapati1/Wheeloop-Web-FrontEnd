@@ -15,6 +15,8 @@ const Navbar = () => {
   useEffect(() => {
     const token = localStorage.getItem("authToken");
     const userRole = localStorage.getItem("userRole");
+    const userId = localStorage.getItem("userId");
+
     console.log("Token on Mount:", token);
 
     if (token) {
@@ -53,6 +55,7 @@ const Navbar = () => {
       console.log("Login Success:", data);
       localStorage.setItem("authToken", data.token);
       localStorage.setItem("userRole", data.role);
+      localStorage.setItem("userId", data.userId)
       setLoggedIn(true);
       setIsLoginModalOpen(false);
 
@@ -82,22 +85,24 @@ const Navbar = () => {
       });
     },
     onSuccess: (data) => {
-      console.log("Signup Success:", data);
-      toast.success("Signup successful!"); // Success toast
+      console.log("Login Success:", data);
+      console.log("User ID:", data.userId); // Now you have access to the user ID
 
-      // Save the token and role in localStorage
-      localStorage.setItem("authToken", data.token);  // Assuming `data.token` contains the JWT
-      localStorage.setItem("userRole", data.role || 'customer'); // Store the role (default to 'customer')
+      localStorage.setItem("authToken", data.token);
+      localStorage.setItem("userRole", data.role);
+      localStorage.setItem("userId", data.userId); // Save the userId to localStorage
 
-      setIsSignupModalOpen(false);  // Close the signup modal on success
+      setIsLoginModalOpen(false);
+      toast.success("Login successful!");
 
       // Redirect user based on their role
       if (data.role === "admin") {
-        navigate("/admin"); // Admin page
+        navigate("/admin");
       } else {
-        navigate("/"); // Home page
+        navigate("/");
       }
     },
+
     onError: (error) => {
       console.log("Signup Error:", error);
       toast.error("Signup failed. Please try again."); // Error toast
@@ -134,7 +139,9 @@ const Navbar = () => {
 
   const handleLogout = () => {
     localStorage.removeItem("authToken");  // Remove token from local storage
-    localStorage.removeItem("userRole");   // Remove the role from local storage
+    localStorage.removeItem("userRole");
+    // Remove the role from local storage
+    localStorage.removeItem("userId");
     setLoggedIn(false);  // Set loggedIn to false
     window.location.href = "/";  // Redirect to home or login page after logout
   };

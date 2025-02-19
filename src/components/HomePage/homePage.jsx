@@ -1,7 +1,7 @@
 import AOS from "aos";
 import "aos/dist/aos.css";
 import React, { useEffect } from "react";
-import Navbar from "../Navbar/navbar";
+import Navbar from "../navBar/navbar";
 
 const HomePage = () => {
     useEffect(() => {
@@ -49,24 +49,6 @@ const HomePage = () => {
                 </div>
             </section>
 
-            {/* About Section */}
-            <section
-                id="about"
-                className="w-full min-h-screen bg-gradient-to-r from-blue-100 to-white flex items-center justify-center"
-            >
-                <div className="w-full max-w-5xl px-6 text-center space-y-6">
-                    <h2 className="text-5xl font-semibold text-primary">About Us</h2>
-                    <p className="text-xl lg:text-2xl text-gray-700">
-                        At Wheeloop, we provide you with seamless and reliable car rental services for all
-                        your travel needs. Whether it's a weekend getaway or a business trip, we’ve got you
-                        covered.
-                    </p>
-                    <button className="rounded-md bg-primary hover:bg-primary/80 transition duration-500 py-3 px-8 text-black text-xl">
-                        Learn More About Us
-                    </button>
-                </div>
-            </section>
-
             {/* Recommendation Section */}
             <section
                 id="recommendation"
@@ -94,6 +76,24 @@ const HomePage = () => {
                             <p>For those who love style and comfort.</p>
                         </li>
                     </ul>
+                </div>
+            </section>
+
+            {/* About Section */}
+            <section
+                id="about"
+                className="w-full min-h-screen bg-gradient-to-r from-blue-100 to-white flex items-center justify-center"
+            >
+                <div className="w-full max-w-5xl px-6 text-center space-y-6">
+                    <h2 className="text-5xl font-semibold text-primary">About Us</h2>
+                    <p className="text-xl lg:text-2xl text-gray-700">
+                        At Wheeloop, we provide you with seamless and reliable car rental services for all
+                        your travel needs. Whether it's a weekend getaway or a business trip, we’ve got you
+                        covered.
+                    </p>
+                    <button className="rounded-md bg-primary hover:bg-primary/80 transition duration-500 py-3 px-8 text-black text-xl">
+                        Learn More About Us
+                    </button>
                 </div>
             </section>
 

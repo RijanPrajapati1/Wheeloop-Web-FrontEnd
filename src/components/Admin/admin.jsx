@@ -1,8 +1,8 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom"; // Import useNavigate for routing
-import ManageBookings from "../Admin/manageBooking.jsx";
-import ManageCars from "../Admin/manageCar.jsx";
-import ManageUsers from "../Admin/manageUser.jsx";
+import ManageBookings from "./manageBooking.jsx";
+import ManageCars from "./manageCar.jsx";
+import ManageUsers from "./manageUser.jsx";
 
 const AdminPanel = () => {
     const [activeSection, setActiveSection] = useState("dashboard");

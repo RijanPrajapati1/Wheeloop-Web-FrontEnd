@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { FaCogs, FaRoad, FaStar, FaUser } from "react-icons/fa";
-import Navbar from "../Navbar/navbar";
+import Navbar from "../navBar/navbar";
 import axiosInstance from "../utils/axios";
 
 const CarCard = ({ car, onCardClick }) => (
@@ -9,7 +9,12 @@ const CarCard = ({ car, onCardClick }) => (
         onClick={() => onCardClick(car)}
     >
         <div className="flex justify-center">
-            <img src={car.img} alt={car.name} className="w-full h-48 object-contain rounded-xl" />
+            <img
+                src={car.image}
+                alt={car.name}
+                className="w-full h-48 object-contain rounded-xl"
+                onError={(e) => { e.target.src = "/placeholder-image.jpg"; }} // Fallback image
+            />
         </div>
         <h2 className="text-xl font-semibold text-gray-800 mt-4 truncate">{car.name}</h2>
         <p className="text-sm text-gray-500 mb-4">{car.type}</p>
@@ -91,22 +96,45 @@ const CarListing = () => {
         }));
     };
 
-    const handleFormSubmit = (e) => {
+    const handleFormSubmit = async (e) => {
         e.preventDefault();
-        // Handle form submission logic
-        console.log("Form submitted", formData);
-        // Reset form after submission
-        setFormData({
-            name: "",
-            contact: "",
-            pickUpLocation: "",
-            startDate: "",
-            endDate: "",
-            status: "",
-            driverDays: 0,
-        });
-        setShowBookingForm(false);
-        setSelectedCar(null);
+
+        // Get the userId (from localStorage or wherever you store it)
+        const userId = localStorage.getItem("userId"); // Assuming you store userId in localStorage after login
+
+        const bookingData = {
+            userId, // Add the userId to the booking data
+            carId: selectedCar?._id, // Ensure this is the correct car ID
+            name: formData.name,
+            contact: formData.contact,
+            pickUpLocation: formData.pickUpLocation,
+            startDate: formData.startDate,
+            endDate: formData.endDate,
+            status: "pending", // Default status
+            driverDays: formData.driverDays,
+        };
+
+        try {
+            const response = await axiosInstance.post("/rental", bookingData);
+            console.log("Booking successful:", response.data);
+
+            // Reset form and close modal
+            setFormData({
+                name: "",
+                contact: "",
+                pickUpLocation: "",
+                startDate: "",
+                endDate: "",
+                status: "",
+                driverDays: 0,
+            });
+            setShowBookingForm(false);
+            setSelectedCar(null);
+            alert("Booking confirmed!");
+        } catch (error) {
+            console.error("Error submitting booking:", error.response?.data || error.message);
+            alert("Failed to book the car. Please try again.");
+        }
     };
 
     const handleBookClick = () => {
@@ -147,10 +175,12 @@ const CarListing = () => {
                             <h3 className="text-2xl font-semibold mb-4">{selectedCar.name}</h3>
                             <div className="flex overflow-x-auto gap-2 mb-4">
                                 <img
-                                    src={selectedCar.img}
+                                    src={selectedCar.image}
                                     alt={selectedCar.name}
                                     className="w-40 h-24 rounded-lg object-cover"
+                                    onError={(e) => { e.target.src = "/placeholder-image.jpg"; }}  // Optional fallback image
                                 />
+
                             </div>
                             <p className="text-gray-700 mb-2"><strong>Type:</strong> {selectedCar.type}</p>
                             <p className="text-gray-700 mb-2"><strong>Capacity:</strong> {selectedCar.capacity} People</p>
