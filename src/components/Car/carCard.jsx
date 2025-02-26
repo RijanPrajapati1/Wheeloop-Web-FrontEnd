@@ -1,6 +1,8 @@
 import React, { useEffect, useState } from "react";
 import { FaCogs, FaRoad, FaStar, FaUser } from "react-icons/fa";
-import Navbar from "../navBar/navbar";
+
+import { useNavigate } from "react-router-dom";
+import Navbar from "../Navbar/navbar";
 import axiosInstance from "../utils/axios";
 
 const CarCard = ({ car, onCardClick }) => (
@@ -21,7 +23,7 @@ const CarCard = ({ car, onCardClick }) => (
         <div className="flex justify-between items-center text-sm text-gray-700 border-t border-gray-200 pt-4">
             <div className="flex items-center gap-2">
                 <FaUser className="text-gray-600" />
-                <p>{car.capacity} People</p>
+                <p>{car.capacity} 4 People</p>
             </div>
             <div className="flex items-center gap-2">
                 <FaCogs className="text-gray-600" />
@@ -29,11 +31,11 @@ const CarCard = ({ car, onCardClick }) => (
             </div>
             <div className="flex items-center gap-2">
                 <FaRoad className="text-gray-600" />
-                <p>{car.mileage} miles/day</p>
+                <p>{car.mileage} 20 miles/day</p>
             </div>
         </div>
         <div className="mt-6 flex justify-between items-center">
-            <p className="text-lg font-bold text-green-600">${car.price}/day</p>
+            <p className="text-lg font-bold text-green-600">Rs.{car.price}/day</p>
             <button
                 className="bg-blue-600 text-white px-5 py-2 rounded-full hover:bg-blue-700 transition duration-300"
                 onClick={(e) => {
@@ -52,6 +54,7 @@ const CarListing = () => {
     const [searchTerm, setSearchTerm] = useState("");
     const [selectedCar, setSelectedCar] = useState(null);
     const [showBookingForm, setShowBookingForm] = useState(false);
+    const navigate = useNavigate(); // useNavigate for navigation
     const [formData, setFormData] = useState({
         name: "",
         contact: "",
@@ -66,7 +69,7 @@ const CarListing = () => {
     useEffect(() => {
         const fetchCars = async () => {
             try {
-                const response = await axiosInstance.get("/car"); // Adjust endpoint if necessary
+                const response = await axiosInstance.get("/car/findAll"); // Adjust endpoint if necessary
                 setCars(response.data); // Set the cars data to state
             } catch (error) {
                 console.error("Error fetching cars", error);
@@ -99,24 +102,24 @@ const CarListing = () => {
     const handleFormSubmit = async (e) => {
         e.preventDefault();
 
-        // Get the userId (from localStorage or wherever you store it)
-        const userId = localStorage.getItem("userId"); // Assuming you store userId in localStorage after login
+        // Get the userId from localStorage
+        const userId = localStorage.getItem("userId");
 
         const bookingData = {
-            userId, // Add the userId to the booking data
-            carId: selectedCar?._id, // Ensure this is the correct car ID
+            userId,
+            carId: selectedCar?._id,
             name: formData.name,
             contact: formData.contact,
             pickUpLocation: formData.pickUpLocation,
             startDate: formData.startDate,
             endDate: formData.endDate,
-            status: "pending", // Default status
+            status: "pending",
             driverDays: formData.driverDays,
         };
 
         try {
-            const response = await axiosInstance.post("/rental", bookingData);
-            console.log("Booking successful:", response.data);
+            // const response = await axiosInstance.post("/rental", bookingData);
+            // console.log("Booking successful:", response.data);
 
             // Reset form and close modal
             setFormData({
@@ -130,12 +133,35 @@ const CarListing = () => {
             });
             setShowBookingForm(false);
             setSelectedCar(null);
-            alert("Booking confirmed!");
+
+            //  Redirect to Payment page and pass booking details
+            navigate("/payment", {
+                state: {
+                    userId,
+                    carId: selectedCar?._id,
+                    carName: selectedCar?.name,
+                    pricePerDay: selectedCar?.price,
+                    rentalDays: calculateDays(formData.startDate, formData.endDate),
+                    driverDays: formData.driverDays,
+                    pickUpLocation: formData.pickUpLocation,
+                    startDate: formData.startDate,
+                    endDate: formData.endDate
+                }
+            });
+
         } catch (error) {
             console.error("Error submitting booking:", error.response?.data || error.message);
             alert("Failed to book the car. Please try again.");
         }
     };
+
+    // Helper function to calculate total rental days
+    const calculateDays = (start, end) => {
+        const startDate = new Date(start);
+        const endDate = new Date(end);
+        return Math.ceil((endDate - startDate) / (1000 * 60 * 60 * 24)); // Convert milliseconds to days
+    };
+
 
     const handleBookClick = () => {
         setShowBookingForm(true);
@@ -183,10 +209,10 @@ const CarListing = () => {
 
                             </div>
                             <p className="text-gray-700 mb-2"><strong>Type:</strong> {selectedCar.type}</p>
-                            <p className="text-gray-700 mb-2"><strong>Capacity:</strong> {selectedCar.capacity} People</p>
+                            <p className="text-gray-700 mb-2"><strong>Capacity:</strong> {selectedCar.capacity}4 People</p>
                             <p className="text-gray-700 mb-2"><strong>Transmission:</strong> {selectedCar.transmission}</p>
-                            <p className="text-gray-700 mb-2"><strong>Mileage:</strong> {selectedCar.mileage} miles/day</p>
-                            <p className="text-gray-700 mb-2"><strong>Price:</strong> ${selectedCar.price}/day</p>
+                            <p className="text-gray-700 mb-2"><strong>Mileage:</strong> {selectedCar.mileage}20 miles/day</p>
+                            <p className="text-gray-700 mb-2"><strong>Price:</strong> Rs.{selectedCar.price}/day</p>
                             <div className="flex items-center mb-4">
                                 <FaStar className="text-yellow-500" />
                                 <span className="ml-2 text-gray-800 font-semibold">{selectedCar.rating} / 5</span>
@@ -213,7 +239,7 @@ const CarListing = () => {
                             {/* Car Information Display */}
                             <div className="mb-4">
                                 <p><strong>Car:</strong> {selectedCar?.name}</p>
-                                <p><strong>Price:</strong> ${selectedCar?.price}/day</p>
+                                <p><strong>Price:</strong> Rs.{selectedCar?.price}/day</p>
                             </div>
 
                             <form onSubmit={handleFormSubmit}>
@@ -267,8 +293,9 @@ const CarListing = () => {
                                         id="startDate"
                                         name="startDate"
                                         value={formData.startDate}
+                                        min={new Date().toISOString().split("T")[0]} // Restrict past dates
                                         onChange={handleInputChange}
-                                        className="w-full px-4 py-3 bg-white text-black border border-gray-400 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary"
+                                        className="w-full px-4 py-3 bg-white text-black border border-gray-400 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary text-gray-900"
                                         required
                                     />
                                 </div>
@@ -281,15 +308,16 @@ const CarListing = () => {
                                         id="endDate"
                                         name="endDate"
                                         value={formData.endDate}
+                                        min={formData.startDate || new Date().toISOString().split("T")[0]} // End date must be after Start Date
                                         onChange={handleInputChange}
-                                        className="w-full px-4 py-3 bg-white text-black border border-gray-400 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary"
+                                        className="w-full px-4 py-3 bg-white text-black border border-gray-400 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary text-gray-900"
                                         required
                                     />
                                 </div>
 
                                 {/* Driver Days */}
                                 <div className="mb-4">
-                                    <label htmlFor="driverDays" className="block text-sm font-medium text-gray-700">Driver Days</label>
+                                    <label htmlFor="driverDays per day=500" className="block text-sm font-medium text-gray-700">Driver Days : Per Day:Rs. 500</label>
                                     <input
                                         type="number"
                                         id="driverDays"
@@ -304,9 +332,9 @@ const CarListing = () => {
                                 <div className="flex justify-between">
                                     <button
                                         type="submit"
-                                        className="bg-green-600 text-white px-5 py-2 rounded-full hover:bg-green-700 transition duration-300"
+                                        className="bg-purple-600 text-white px-5 py-2 rounded-full hover:bg-green-700 transition duration-300"
                                     >
-                                        Confirm Booking
+                                        Go to Payment
                                     </button>
                                     <button
                                         type="button"

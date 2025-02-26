@@ -109,12 +109,7 @@ const ManageUsers = () => {
                     className="w-full px-4 py-3 bg-white text-black border border-gray-400 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary"
                 />
                 {/* Add User Button */}
-                <button
-                    onClick={handleAdd}
-                    className="ml-4 px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 focus:outline-none"
-                >
-                    Add User
-                </button>
+
 
             </div>
 

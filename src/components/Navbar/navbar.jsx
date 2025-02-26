@@ -171,11 +171,7 @@ const Navbar = () => {
               Contact
             </a>
           </li>
-          <li>
-            <a className="text-lg font-medium text-white hover:text-primary" href="/About">
-              About
-            </a>
-          </li>
+
           <li>
             <a className="text-lg font-medium text-white hover:text-primary" href="/Booking">
               Booking
@@ -201,7 +197,7 @@ const Navbar = () => {
               <div className="w-10 rounded-full">
                 <img
                   alt="User Avatar"
-                  src="https://img.daisyui.com/images/stock/photo-1534528741775-53994a69daeb.webp"
+                  src="src/assets/images/user_profile.png"
                 />
               </div>
             </div>
@@ -209,13 +205,10 @@ const Navbar = () => {
               tabIndex={0}
               className="menu menu-sm dropdown-content bg-base-100 rounded-lg z-[1] mt-3 w-52 p-3 shadow-lg">
               <li>
-                <a className="justify-between">
+                <a className="justify-between cursor-pointer" onClick={() => navigate("/userprofile")}>
                   Profile
                   <span className="badge badge-primary">New</span>
                 </a>
-              </li>
-              <li>
-                <a>Settings</a>
               </li>
               <li>
                 <a onClick={handleLogout}>Logout</a>

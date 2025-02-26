@@ -6,6 +6,9 @@ import CarListing from "./components/Car/carCard";
 import Contact from "./components/Contact/contact";
 import HomePage from "./components/HomePage/homePage";
 import Booking from "./components/booking/booking";
+import Payment from "./components/payment/payment";
+import UserProfile from "./components/user_profile/user_profile";
+
 
 const queryClient = new QueryClient();
 
@@ -19,6 +22,8 @@ const App = () => {
           <Route path="/carlists" element={<CarListing />} />
           <Route path="/contact" element={<Contact />} />
           <Route path="/booking" element={<Booking />} />
+          <Route path="/payment" element={<Payment />} />
+          <Route path="/userprofile" element={<UserProfile />} />
         </Routes>
       </Router>
     </QueryClientProvider>

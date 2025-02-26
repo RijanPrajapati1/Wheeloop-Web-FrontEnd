@@ -1,119 +1,125 @@
-import React, { useState } from "react";
-import { FaEdit, FaTrashAlt } from "react-icons/fa"; // Importing icons from react-icons
+import React, { useEffect, useState } from "react";
+import { FaEdit, FaTrashAlt } from "react-icons/fa";
+import axiosInstance from "../utils/axios";
 
 const ManageBookings = () => {
-    // Example booking data with a default status
-    const [bookings, setBookings] = useState([
-        {
-            id: 1,
-            user: "John Doe",
-            car: "Tesla Model 3",
-            pickUpLocation: "Los Angeles, CA",
-            startDate: "2025-02-01",
-            endDate: "2025-02-07",
-            driver: "2 days",
-            status: "Confirmed"
-        },
-        {
-            id: 2,
-            user: "Jane Smith",
-            car: "BMW X5",
-            pickUpLocation: "San Francisco, CA",
-            startDate: "2025-03-01",
-            endDate: "2025-03-07",
-            driver: "1 week",
-            status: "Pending"
-        }
-    ]);
-
+    const [bookings, setBookings] = useState([]);
+    const [loading, setLoading] = useState(true);
+    const [error, setError] = useState(null);
     const [searchTerm, setSearchTerm] = useState("");
-    const [isEditing, setIsEditing] = useState(false); // Toggle state for editing
-    const [currentBooking, setCurrentBooking] = useState(null); // Store current booking being edited
+    const [isEditing, setIsEditing] = useState(false);
+    const [currentBooking, setCurrentBooking] = useState(null);
 
-    // Handle status change
-    const handleStatusChange = (id, newStatus) => {
-        const updatedBookings = bookings.map((booking) =>
-            booking.id === id ? { ...booking, status: newStatus } : booking
-        );
-        setBookings(updatedBookings);
-    };
+    // ✅ Fetch all bookings for Admin
+    useEffect(() => {
+        const fetchBookings = async () => {
+            try {
+                const response = await axiosInstance.get("/rental/adminBookings");
+                setBookings(response.data);
+                setLoading(false);
+            } catch (err) {
+                console.error("Error fetching bookings:", err);
+                setError("Failed to load bookings.");
+                setLoading(false);
+            }
+        };
 
-    // Save action (this can be integrated with a backend to persist changes)
-    const handleSave = () => {
-        if (currentBooking) {
-            const updatedBookings = bookings.map((booking) =>
-                booking.id === currentBooking.id ? currentBooking : booking
-            );
-            setBookings(updatedBookings);
-            setIsEditing(false); // Close the edit form
-            setCurrentBooking(null); // Clear the current booking being edited
-        }
-    };
+        fetchBookings();
+    }, []);
 
-    // Handle search input
+    // ✅ Handle search input
     const handleSearchChange = (e) => {
         setSearchTerm(e.target.value);
     };
 
-    // Filter bookings based on the search term
+    // ✅ Filter bookings based on search
     const filteredBookings = bookings.filter(
         (booking) =>
-            booking.user.toLowerCase().includes(searchTerm.toLowerCase()) ||
-            booking.car.toLowerCase().includes(searchTerm.toLowerCase())
+            booking.userId?.email.toLowerCase().includes(searchTerm.toLowerCase()) ||
+            booking.carId?.name.toLowerCase().includes(searchTerm.toLowerCase())
     );
 
-    // Handle delete action (This can be integrated with backend)
-    const handleDelete = (id) => {
-        const updatedBookings = bookings.filter((booking) => booking.id !== id);
-        setBookings(updatedBookings);
-        console.log(`Booking ID ${id} deleted.`);
+    // ✅ Handle status change
+    const handleStatusChange = async (id, newStatus) => {
+        try {
+            await axiosInstance.put(`/rental/updateBooking/${id}`, { status: newStatus });
+            setBookings((prev) =>
+                prev.map((booking) =>
+                    booking._id === id ? { ...booking, status: newStatus } : booking
+                )
+            );
+        } catch (err) {
+            console.error("Error updating status:", err);
+        }
     };
 
-    // Handle edit click, set the current booking to be edited
+    // ✅ Handle delete action with confirmation alert
+    const handleDelete = async (id) => {
+        if (window.confirm("Are you sure you want to delete this booking?")) {
+            try {
+                await axiosInstance.delete(`/rental/deleteBooking/${id}`);
+                setBookings((prev) => prev.filter((booking) => booking._id !== id));
+            } catch (err) {
+                console.error("Error deleting booking:", err);
+            }
+        }
+    };
+
+    // ✅ Handle edit modal toggle
     const handleEdit = (booking) => {
         setCurrentBooking({ ...booking });
-        setIsEditing(true); // Open the edit form
+        setIsEditing(true);
+    };
+
+    // ✅ Handle save action in edit modal
+    const handleSave = async () => {
+        if (!currentBooking) return;
+
+        try {
+            await axiosInstance.put(`/rental/updateBooking/${currentBooking._id}`, currentBooking);
+            setBookings((prev) =>
+                prev.map((booking) =>
+                    booking._id === currentBooking._id ? currentBooking : booking
+                )
+            );
+            setIsEditing(false);
+        } catch (err) {
+            console.error("Error updating booking:", err);
+        }
     };
 
     return (
         <div className="bg-white shadow-lg rounded-lg p-6">
             <h2 className="text-2xl font-semibold mb-4 text-deepPurple">Manage Bookings</h2>
 
-            {/* Search Bar */}
-            <div className="mb-6">
-                <input
-                    type="text"
-                    value={searchTerm}
-                    onChange={handleSearchChange}
-                    placeholder="Search by user or car"
-                    className="w-full px-4 py-3 bg-white text-black border border-gray-400 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary"
-                />
-            </div>
+            <input
+                type="text"
+                value={searchTerm}
+                onChange={handleSearchChange}
+                placeholder="Search by user or car"
+                className="w-full px-4 py-3 bg-white text-black border border-gray-400 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary"
+            />
 
-            {/* Edit Booking Modal/Toggle */}
+            {/* ✅ Edit Booking Modal */}
             {isEditing && (
                 <div className="fixed inset-0 bg-gray-500 bg-opacity-50 flex justify-center items-center">
                     <div className="bg-white p-6 rounded-lg w-96 shadow-lg">
                         <h3 className="text-xl font-semibold mb-4 text-primary">Edit Booking</h3>
 
-                        <label className="block mb-2 text-sm font-medium text-gray-600">User</label>
+                        <label className="block mb-2 text-sm font-medium text-gray-600">User Email</label>
                         <input
                             type="text"
-                            value={currentBooking.user}
-                            onChange={(e) =>
-                                setCurrentBooking({ ...currentBooking, user: e.target.value })
-                            }
-                            className="w-full px-4 py-3 bg-white text-black border border-gray-400 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary mb-4"
+                            value={currentBooking.userId?.email}
+                            readOnly
+                            className="w-full px-4 py-3 bg-gray-100 border border-gray-400 rounded-lg mb-4"
                         />
 
                         <label className="block mb-2 text-sm font-medium text-gray-600">Car</label>
                         <input
                             type="text"
-                            value={currentBooking.car}
-                            onChange={(e) =>
-                                setCurrentBooking({ ...currentBooking, car: e.target.value })
-                            }
-                            className="w-full px-4 py-3 bg-white text-black border border-gray-400 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary mb-4"
+                            value={currentBooking.carId?.name}
+                            readOnly
+                            className="w-full px-4 py-3 bg-gray-100 border border-gray-400 rounded-lg mb-4"
                         />
 
                         <label className="block mb-2 text-sm font-medium text-gray-600">Pick-Up Location</label>
@@ -121,32 +127,9 @@ const ManageBookings = () => {
                             type="text"
                             value={currentBooking.pickUpLocation}
                             onChange={(e) =>
-                                setCurrentBooking({
-                                    ...currentBooking,
-                                    pickUpLocation: e.target.value
-                                })
+                                setCurrentBooking({ ...currentBooking, pickUpLocation: e.target.value })
                             }
-                            className="w-full px-4 py-3 bg-white text-black border border-gray-400 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary mb-4"
-                        />
-
-                        <label className="block mb-2 text-sm font-medium text-gray-600">Start Date</label>
-                        <input
-                            type="date"
-                            value={currentBooking.startDate}
-                            onChange={(e) =>
-                                setCurrentBooking({ ...currentBooking, startDate: e.target.value })
-                            }
-                            className="w-full px-4 py-3 bg-white text-black border border-gray-400 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary mb-4"
-                        />
-
-                        <label className="block mb-2 text-sm font-medium text-gray-600">End Date</label>
-                        <input
-                            type="date"
-                            value={currentBooking.endDate}
-                            onChange={(e) =>
-                                setCurrentBooking({ ...currentBooking, endDate: e.target.value })
-                            }
-                            className="w-full px-4 py-3 bg-white text-black border border-gray-400 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary mb-4"
+                            className="w-full px-4 py-3 border border-gray-400 rounded-lg mb-4"
                         />
 
                         <label className="block mb-2 text-sm font-medium text-gray-600">Status</label>
@@ -155,7 +138,7 @@ const ManageBookings = () => {
                             onChange={(e) =>
                                 setCurrentBooking({ ...currentBooking, status: e.target.value })
                             }
-                            className="w-full px-4 py-3 bg-white text-black border border-gray-400 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary mb-4"
+                            className="w-full px-4 py-3 border border-gray-400 rounded-lg mb-4"
                         >
                             <option value="Pending">Pending</option>
                             <option value="Confirmed">Confirmed</option>
@@ -163,16 +146,10 @@ const ManageBookings = () => {
                         </select>
 
                         <div className="mt-6">
-                            <button
-                                onClick={handleSave}
-                                className="w-full px-4 py-3 bg-green-500 text-white rounded-lg hover:bg-green-600 focus:outline-none focus:ring-2 focus:ring-green-500 mb-4"
-                            >
+                            <button onClick={handleSave} className="w-full px-4 py-3 bg-green-500 text-white rounded-lg mb-4">
                                 Save Changes
                             </button>
-                            <button
-                                onClick={() => setIsEditing(false)} // Close the modal
-                                className="w-full px-4 py-3 bg-gray-500 text-white rounded-lg hover:bg-gray-600 focus:outline-none focus:ring-2 focus:ring-gray-500"
-                            >
+                            <button onClick={() => setIsEditing(false)} className="w-full px-4 py-3 bg-gray-500 text-white rounded-lg">
                                 Cancel
                             </button>
                         </div>
@@ -180,42 +157,35 @@ const ManageBookings = () => {
                 </div>
             )}
 
+            {/* ✅ Booking Table */}
             <table className="table-auto w-full border mt-6">
                 <thead>
                     <tr className="bg-gray-200">
                         <th className="px-4 py-2">Booking ID</th>
-                        <th className="px-4 py-2">User</th>
+                        <th className="px-4 py-2">User Email</th>
                         <th className="px-4 py-2">Car</th>
                         <th className="px-4 py-2">Pick-Up Location</th>
                         <th className="px-4 py-2">Start Date</th>
                         <th className="px-4 py-2">End Date</th>
-                        <th className="px-4 py-2">Driver</th>
                         <th className="px-4 py-2">Status</th>
                         <th className="px-4 py-2">Actions</th>
                     </tr>
                 </thead>
                 <tbody>
                     {filteredBookings.map((booking) => (
-                        <tr key={booking.id}>
-                            <td className="border px-4 py-2">{booking.id}</td>
-                            <td className="border px-4 py-2">{booking.user}</td>
-                            <td className="border px-4 py-2">{booking.car}</td>
+                        <tr key={booking._id}>
+                            <td className="border px-4 py-2">{booking._id}</td>
+                            <td className="border px-4 py-2">{booking.userId?.email}</td>
+                            <td className="border px-4 py-2">{booking.carId?.name}</td>
                             <td className="border px-4 py-2">{booking.pickUpLocation}</td>
                             <td className="border px-4 py-2">{booking.startDate}</td>
                             <td className="border px-4 py-2">{booking.endDate}</td>
-                            <td className="border px-4 py-2">{booking.driver}</td>
                             <td className="border px-4 py-2">{booking.status}</td>
                             <td className="border px-4 py-2">
-                                <button
-                                    onClick={() => handleEdit(booking)}
-                                    className="text-blue-500 mr-5"
-                                >
+                                <button onClick={() => handleEdit(booking)} className="text-blue-500 mr-5">
                                     <FaEdit />
                                 </button>
-                                <button
-                                    onClick={() => handleDelete(booking.id)}
-                                    className="text-red-500"
-                                >
+                                <button onClick={() => handleDelete(booking._id)} className="text-red-500">
                                     <FaTrashAlt />
                                 </button>
                             </td>
