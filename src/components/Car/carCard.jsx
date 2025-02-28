@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { FaCogs, FaRoad, FaStar, FaUser } from "react-icons/fa";
+import { FaCogs, FaRoad, FaUser } from "react-icons/fa";
 
 import { useNavigate } from "react-router-dom";
 import Navbar from "../Navbar/navbar";
@@ -65,6 +65,12 @@ const CarListing = () => {
         driverDays: 0,
     });
 
+    //  Added Review Section: Review state variables
+    const [reviews, setReviews] = useState([]);
+    const [newReview, setNewReview] = useState("");
+
+
+
     // Fetch cars data from backend
     useEffect(() => {
         const fetchCars = async () => {
@@ -101,15 +107,11 @@ const CarListing = () => {
 
     const handleFormSubmit = async (e) => {
         e.preventDefault();
-
-        // Get the userId from localStorage
         const userId = localStorage.getItem("userId");
 
         const bookingData = {
             userId,
             carId: selectedCar?._id,
-            name: formData.name,
-            contact: formData.contact,
             pickUpLocation: formData.pickUpLocation,
             startDate: formData.startDate,
             endDate: formData.endDate,
@@ -118,26 +120,31 @@ const CarListing = () => {
         };
 
         try {
-            // const response = await axiosInstance.post("/rental", bookingData);
-            // console.log("Booking successful:", response.data);
+            console.log("📤 Sending booking request:", bookingData);
 
-            // Reset form and close modal
-            setFormData({
-                name: "",
-                contact: "",
-                pickUpLocation: "",
-                startDate: "",
-                endDate: "",
-                status: "",
-                driverDays: 0,
-            });
+            const response = await axiosInstance.post("/rental", bookingData);
+
+            console.log("📥 Booking API Response:", response);
+            console.log("📥 Response Data:", response.data);
+
+            const bookingId = response.data?.bookingId || response.data?._id;
+
+            if (!bookingId) {
+                console.error("🚨 Booking ID not received from the server!", response.data);
+                alert("Booking ID not received from the server!");
+                return;
+            }
+
+            //  Store booking ID in localStorage
+            localStorage.setItem("bookingId", bookingId);
+            console.log(" Stored bookingId in localStorage:", localStorage.getItem("bookingId"));
+
             setShowBookingForm(false);
             setSelectedCar(null);
 
-            //  Redirect to Payment page and pass booking details
             navigate("/payment", {
                 state: {
-                    userId,
+                    bookingId, //  Pass correct bookingId
                     carId: selectedCar?._id,
                     carName: selectedCar?.name,
                     pricePerDay: selectedCar?.price,
@@ -150,7 +157,7 @@ const CarListing = () => {
             });
 
         } catch (error) {
-            console.error("Error submitting booking:", error.response?.data || error.message);
+            console.error("❌ Error submitting booking:", error.response?.data || error.message);
             alert("Failed to book the car. Please try again.");
         }
     };
@@ -164,8 +171,63 @@ const CarListing = () => {
 
 
     const handleBookClick = () => {
+        const userId = localStorage.getItem("userId");
+
+        if (!userId) {
+            alert("You need to log in to book a car.");
+            return;
+        }
+
         setShowBookingForm(true);
     };
+
+
+    //  Fetch Reviews When Car is Selected
+    useEffect(() => {
+        if (selectedCar) {
+            fetchReviews(selectedCar._id);
+        }
+    }, [selectedCar]);
+
+    //  Function to Fetch Reviews for Selected Car
+    const fetchReviews = async (carId) => {
+        try {
+            setReviews([]); //  Reset reviews before fetching new ones
+            const response = await axiosInstance.get(`/review/car/${carId}`);
+            setReviews(response.data.reviews || []);
+        } catch (error) {
+            console.error("❌ Error fetching reviews:", error.response?.data || error.message);
+            setReviews([]);
+        }
+    };
+
+    //  Submit a Review (Fixed)
+    const handleReviewSubmit = async () => {
+        if (!newReview.trim()) return;
+
+        const userId = localStorage.getItem("userId"); // Retrieve userId inside the function
+
+        if (!userId) {
+            alert("Please log in or sign up to submit a review.");
+            return;
+        }
+
+        try {
+            await axiosInstance.post("/review/submit", {
+                userId,
+                carId: selectedCar._id,
+                reviewText: newReview
+            });
+
+            setNewReview(""); //  Clear input field
+            fetchReviews(selectedCar._id); // Fetch updated reviews
+        } catch (error) {
+            console.error("❌ Error submitting review:", error.response?.data || error.message);
+            alert("Failed to submit review. Please try again.");
+        }
+    };
+
+
 
     return (
         <div>
@@ -213,11 +275,33 @@ const CarListing = () => {
                             <p className="text-gray-700 mb-2"><strong>Transmission:</strong> {selectedCar.transmission}</p>
                             <p className="text-gray-700 mb-2"><strong>Mileage:</strong> {selectedCar.mileage}20 miles/day</p>
                             <p className="text-gray-700 mb-2"><strong>Price:</strong> Rs.{selectedCar.price}/day</p>
-                            <div className="flex items-center mb-4">
-                                <FaStar className="text-yellow-500" />
-                                <span className="ml-2 text-gray-800 font-semibold">{selectedCar.rating} / 5</span>
-                            </div>
                             <p className="text-gray-600 mb-6">{selectedCar.description}</p>
+                            {/*  Added Review Section: Display reviews */}
+                            <h4 className="text-xl font-semibold mt-6">Reviews</h4>
+                            <div className="bg-gray-100 p-4 rounded-md h-48 overflow-y-auto">
+                                {reviews.length > 0 ? (
+                                    reviews.map((review, index) => (
+                                        <div key={index} className="border-b py-2">
+                                            <p className="text-sm font-semibold">{review.userId.name || "Anonymous"}:</p>
+                                            <p className="text-sm text-gray-700">{review.reviewText}</p>
+                                        </div>
+                                    ))
+                                ) : (
+                                    <p className="text-sm text-gray-600">No reviews yet.</p>
+                                )}
+                            </div>
+
+                            {/*  Added Review Section: Input box for submitting a review */}
+                            <textarea
+                                className="w-full mt-4 p-3 border rounded-md"
+                                placeholder="Write a review..."
+                                value={newReview}
+                                onChange={(e) => setNewReview(e.target.value)}
+                            ></textarea>
+                            <button className="bg-blue-600 text-white px-4 py-2 mt-3 rounded-md" onClick={handleReviewSubmit}>
+                                Submit Review
+                            </button>
+
                             <div className="flex justify-end">
                                 <button
                                     className="bg-blue-600 text-white px-5 py-2 rounded-full hover:bg-blue-700 transition duration-300"

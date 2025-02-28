@@ -93,7 +93,7 @@ const Navbar = () => {
       localStorage.setItem("userId", data.userId); // Save the userId to localStorage
 
       setIsLoginModalOpen(false);
-      toast.success("Login successful!");
+      toast.success("Signup successful!");
 
       // Redirect user based on their role
       if (data.role === "admin") {
@@ -175,6 +175,11 @@ const Navbar = () => {
           <li>
             <a className="text-lg font-medium text-white hover:text-primary" href="/Booking">
               Booking
+            </a>
+          </li>
+          <li>
+            <a className="text-lg font-medium text-white hover:text-primary" href="/fetchpayment">
+              Payment
             </a>
           </li>
         </ul>

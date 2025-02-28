@@ -55,7 +55,7 @@ const HomePage = () => {
             {/* Recommendation Section */}
             <section id="recommendation" className="w-full min-h-screen bg-gray-100 flex items-center justify-center">
                 <div className="w-full max-w-6xl px-6 space-y-6" data-aos="fade-up">
-                    <h2 className="text-5xl font-bold text-center text-purple-700">Our Recommendations</h2>
+                    <h2 className="text-5xl font-bold text-center text-purple-700">Our Services</h2>
                     <p className="text-lg text-center text-gray-700 leading-relaxed">
                         Based on your travel needs, here are the best car options to suit your journey.
                         Whether you're driving solo, with family, or want a luxurious experience, we've got
