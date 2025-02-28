@@ -2,6 +2,7 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom"; // Import useNavigate for routing
 import ManageBookings from "./manageBooking.jsx";
 import ManageCars from "./manageCar.jsx";
+import ManageNotifications from "./manageNotification.jsx";
 import ManagePayments from "./managePayment.jsx";
 import ManageReviews from "./manageReview.jsx";
 import ManageUsers from "./manageUser.jsx";
@@ -105,6 +106,14 @@ const AdminPanel = () => {
                             </li>
                             <li>
                                 <button
+                                    onClick={() => setActiveSection("notifications")}
+                                    className={`block py-2 px-4 rounded-md transition-all duration-300 ${activeSection === "notifications" ? "bg-blue-500 text-white" : "hover:bg-deepPurple hover:text-white"}`}
+                                >
+                                    Manage Notification
+                                </button>
+                            </li>
+                            <li>
+                                <button
                                     onClick={handleNavigateToHomepage}  // Update here to navigate to homepage
                                     className={`block py-2 px-4 rounded-md transition-all duration-300 ${activeSection === "homepage" ? "bg-blue-500 text-white" : "hover:bg-deepPurple hover:text-white"}`}
                                 >
@@ -125,6 +134,7 @@ const AdminPanel = () => {
                     {activeSection === "bookings" && <ManageBookings />}
                     {activeSection === "payments" && <ManagePayments />}
                     {activeSection === "reviews" && <ManageReviews />}
+                    {activeSection === "notifications" && <ManageNotifications />}
                     {activeSection === "dashboard" && <h1 className="text-4xl font-bold text-deepPurple">Welcome to the Admin Panel</h1>}
                 </div>
             </div>

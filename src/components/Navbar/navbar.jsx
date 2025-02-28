@@ -167,12 +167,6 @@ const Navbar = () => {
             </a>
           </li>
           <li>
-            <a className="text-lg font-medium text-white hover:text-primary" href="/contact">
-              Contact
-            </a>
-          </li>
-
-          <li>
             <a className="text-lg font-medium text-white hover:text-primary" href="/Booking">
               Booking
             </a>
@@ -180,6 +174,11 @@ const Navbar = () => {
           <li>
             <a className="text-lg font-medium text-white hover:text-primary" href="/fetchpayment">
               Payment
+            </a>
+          </li>
+          <li>
+            <a className="text-lg font-medium text-white hover:text-primary" href="/notification">
+              Notification
             </a>
           </li>
         </ul>
