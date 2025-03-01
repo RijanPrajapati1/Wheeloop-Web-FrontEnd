@@ -2,8 +2,8 @@ import { useEffect, useState } from "react";
 import { FaRegWindowClose } from "react-icons/fa";
 import { useNavigate } from "react-router-dom";
 
-import axiosInstance from "../../utils/axios";
-import Navbar from "../navBar/navbar";
+import Navbar from "../Navbar/navbar";
+import axiosInstance from "../utils/axios";
 
 function UserProfileView() {
     const navigate = useNavigate();

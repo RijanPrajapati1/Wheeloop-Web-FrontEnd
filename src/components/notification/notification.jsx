@@ -1,7 +1,8 @@
 import React, { useEffect, useState } from "react";
 
-import axiosInstance from "../../utils/axios";
-import Navbar from "../navBar/navbar";
+
+import Navbar from "../Navbar/navbar";
+import axiosInstance from "../utils/axios";
 
 const NotificationPanel = () => {
     const [notifications, setNotifications] = useState([]);

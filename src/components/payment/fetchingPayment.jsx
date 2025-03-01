@@ -1,8 +1,9 @@
 import React, { useEffect, useState } from "react";
+
 import Navbar from "../Navbar/navbar";
 import axiosInstance from "../utils/axios";
 
-// ✅ Fetch payments by User ID
+//  Fetch payments by User ID
 const fetchPayments = async (userId) => {
     try {
         const response = await axiosInstance.get(`/payment/user/${userId}`);
