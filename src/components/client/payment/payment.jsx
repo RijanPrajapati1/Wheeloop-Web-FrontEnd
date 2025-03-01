@@ -1,7 +1,8 @@
 import React, { useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
-import Navbar from "../Navbar/navbar";
-import axiosInstance from "../utils/axios";
+
+import axiosInstance from "../../utils/axios";
+import Navbar from "../navBar/navbar";
 
 const Payment = () => {
     const location = useLocation();
@@ -20,7 +21,7 @@ const Payment = () => {
         endDate
     } = location.state || {};
 
-    // ✅ Keep totalAmount calculation exactly as it was before
+    // Keep totalAmount calculation exactly as it was before
     const driverCost = driverDays * 500 * rentalDays; // Rs.500 per driver per day
     const totalAmount = rentalDays * pricePerDay + driverCost;
 

@@ -2,8 +2,8 @@ import React, { useEffect, useState } from "react";
 import { FaCogs, FaRoad, FaUser } from "react-icons/fa";
 
 import { useNavigate } from "react-router-dom";
-import Navbar from "../Navbar/navbar";
-import axiosInstance from "../utils/axios";
+import axiosInstance from "../../utils/axios";
+import Navbar from "../navBar/navbar";
 
 const CarCard = ({ car, onCardClick }) => (
     <div

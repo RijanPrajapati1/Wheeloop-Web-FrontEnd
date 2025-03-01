@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
-import Navbar from "../Navbar/navbar";
-import axiosInstance from "../utils/axios";
+import axiosInstance from "../../utils/axios";
+import Navbar from "../navBar/navbar";
 
 // Function to fetch bookings for the logged-in user
 const fetchBookings = async (userId) => {
